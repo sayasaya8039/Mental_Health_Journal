@@ -20,11 +20,12 @@ const adviceRequestSchema = z.object({
   moodLevel: z.number().int().min(1).max(5),
   recentMoods: z.array(z.number().int().min(1).max(5)).optional().default([]),
   provider: z.enum(['gemini', 'openai', 'claude']).optional().default('gemini'),
+  apiKey: z.string().optional(), // クライアント提供のAPIキー
 });
 
 // AIアドバイスエンドポイント
 aiRouter.post('/advice', zValidator('json', adviceRequestSchema), async (c) => {
-  const { journalEntry, moodLevel, recentMoods, provider } = c.req.valid('json');
+  const { journalEntry, moodLevel, recentMoods, provider, apiKey } = c.req.valid('json');
 
   // 緊急キーワードチェック - 危機的状況の場合は即座に専門窓口を案内
   if (checkForCrisisKeywords(journalEntry)) {
@@ -42,16 +43,17 @@ aiRouter.post('/advice', zValidator('json', adviceRequestSchema), async (c) => {
   try {
     let response: { advice: string; suggestions: string[] };
 
+    // クライアント提供のAPIキーを優先、なければサーバー側のキーを使用
     switch (provider) {
       case 'openai':
-        response = await callOpenAI(c.env.OPENAI_API_KEY, prompt, moodLevel);
+        response = await callOpenAI(apiKey || c.env.OPENAI_API_KEY, prompt, moodLevel);
         break;
       case 'claude':
-        response = await callClaude(c.env.ANTHROPIC_API_KEY, prompt, moodLevel);
+        response = await callClaude(apiKey || c.env.ANTHROPIC_API_KEY, prompt, moodLevel);
         break;
       case 'gemini':
       default:
-        response = await callGemini(c.env.GEMINI_API_KEY, prompt, moodLevel);
+        response = await callGemini(apiKey || c.env.GEMINI_API_KEY, prompt, moodLevel);
         break;
     }
 

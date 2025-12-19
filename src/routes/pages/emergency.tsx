@@ -1,4 +1,5 @@
 import type { Context } from 'hono';
+import { raw } from 'hono/html';
 import { Layout } from '../../components/Layout';
 import { HELPLINES } from '../../types';
 
@@ -162,7 +163,7 @@ export const EmergencyPage = (c: Context) => {
         }
       `}</style>
 
-      <script>{`
+      {raw(`<script>
         // SOS送信
         document.getElementById('sos-btn').addEventListener('click', async function() {
           const contacts = JSON.parse(localStorage.getItem('emergency_contacts') || '[]');
@@ -275,7 +276,7 @@ export const EmergencyPage = (c: Context) => {
           document.getElementById('breathing-text').textContent = '開始';
           btn.textContent = '深呼吸を始める';
         }
-      `}</script>
+      </script>`)}
     </Layout>
   );
 };

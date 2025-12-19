@@ -1,4 +1,5 @@
 import type { Context } from 'hono';
+import { raw } from 'hono/html';
 import { Layout } from '../../components/Layout';
 import { MOOD_EMOJIS, type MoodLevel } from '../../types';
 
@@ -72,7 +73,7 @@ export const HomePage = (c: Context) => {
       </div>
 
       {/* 気分選択のスクリプト */}
-      <script>{`
+      {raw(`<script>
         document.querySelectorAll('.mood-btn').forEach(btn => {
           btn.addEventListener('click', function() {
             document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('selected'));
@@ -84,7 +85,7 @@ export const HomePage = (c: Context) => {
             }, 300);
           });
         });
-      `}</script>
+      </script>`)}
     </Layout>
   );
 };

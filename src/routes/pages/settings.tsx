@@ -159,7 +159,7 @@ export const SettingsPage = (c: Context) => {
       {/* バージョン情報 */}
       <div class="card text-center">
         <p class="text-secondary" style={{ fontSize: '0.875rem' }}>
-          Mental Health Journal v1.0.0
+          Mental Health Journal v1.3.1
         </p>
         <p class="text-secondary" style={{ fontSize: '0.75rem', marginTop: 'var(--spacing-xs)' }}>
           あなたの心を大切に 💙
@@ -391,10 +391,12 @@ export const SettingsPage = (c: Context) => {
 
         document.getElementById('ai-provider').addEventListener('change', function() {
           updateAIKeyVisibility(this.value);
+          // プロバイダー変更時も即座に保存
+          saveAISettings();
         });
 
-        // APIキー保存
-        document.getElementById('save-api-key-btn').addEventListener('click', function() {
+        // AI設定の保存
+        function saveAISettings() {
           const aiSettings = {
             provider: document.getElementById('ai-provider').value,
             geminiKey: document.getElementById('gemini-api-key').value,
@@ -402,6 +404,11 @@ export const SettingsPage = (c: Context) => {
             anthropicKey: document.getElementById('anthropic-api-key').value
           };
           localStorage.setItem('ai_settings', JSON.stringify(aiSettings));
+        }
+
+        // APIキー保存
+        document.getElementById('save-api-key-btn').addEventListener('click', function() {
+          saveAISettings();
           alert('APIキーを保存しました');
         });
 

@@ -1,4 +1,5 @@
 import type { Context } from 'hono';
+import { raw } from 'hono/html';
 import { Layout } from '../../components/Layout';
 import { MOOD_EMOJIS, MOOD_COLORS, type MoodLevel } from '../../types';
 
@@ -132,7 +133,7 @@ export const HistoryPage = (c: Context) => {
         }
       `}</style>
 
-      <script>{`
+      {raw(`<script>
         const MOOD_EMOJIS = ${JSON.stringify(MOOD_EMOJIS)};
         const MOOD_COLORS = ${JSON.stringify(MOOD_COLORS)};
 
@@ -276,7 +277,7 @@ export const HistoryPage = (c: Context) => {
 
         // 初期読み込み
         loadData();
-      `}</script>
+      </script>`)}
     </Layout>
   );
 };

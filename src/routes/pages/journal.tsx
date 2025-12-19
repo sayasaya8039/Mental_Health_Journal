@@ -1,4 +1,5 @@
 import type { Context } from 'hono';
+import { raw } from 'hono/html';
 import { Layout } from '../../components/Layout';
 import { MOOD_EMOJIS, DEFAULT_TAGS, type MoodLevel } from '../../types';
 
@@ -154,7 +155,7 @@ export const JournalPage = (c: Context) => {
         }
       `}</style>
 
-      <script>{`
+      {raw(`<script>
         // 気分選択
         let selectedMood = ${initialMood || 'null'};
         document.querySelectorAll('.mood-btn').forEach(btn => {
@@ -204,7 +205,7 @@ export const JournalPage = (c: Context) => {
             updatedAt: new Date().toISOString()
           };
 
-          // IndexedDBに保存（後で実装）
+          // LocalStorageに保存
           try {
             const entries = JSON.parse(localStorage.getItem('journal_entries') || '[]');
             entries.unshift(entry);
@@ -216,13 +217,22 @@ export const JournalPage = (c: Context) => {
           }
         });
 
-        // AIプロバイダー選択
-        let selectedProvider = 'gemini';
+        // AI設定を読み込み
+        const aiSettings = JSON.parse(localStorage.getItem('ai_settings') || '{}');
+        let selectedProvider = aiSettings.provider || 'gemini';
         const providerNames = {
           gemini: '🔮 Gemini 3',
           openai: '🤖 GPT-5.2',
           claude: '🧠 Haiku 4.5'
         };
+
+        // 保存されたプロバイダーを選択状態にする
+        document.querySelectorAll('.provider-btn').forEach(btn => {
+          btn.classList.remove('selected');
+          if (btn.dataset.provider === selectedProvider) {
+            btn.classList.add('selected');
+          }
+        });
 
         document.querySelectorAll('.provider-btn').forEach(btn => {
           btn.addEventListener('click', function() {
@@ -232,11 +242,28 @@ export const JournalPage = (c: Context) => {
           });
         });
 
+        // 現在のプロバイダーのAPIキーを取得
+        function getApiKey(provider) {
+          const settings = JSON.parse(localStorage.getItem('ai_settings') || '{}');
+          switch(provider) {
+            case 'gemini': return settings.geminiKey || '';
+            case 'openai': return settings.openaiKey || '';
+            case 'claude': return settings.anthropicKey || '';
+            default: return '';
+          }
+        }
+
         // AIアドバイス
         document.getElementById('ask-ai-btn').addEventListener('click', async function() {
           const content = document.getElementById('content').value;
           if (!content) {
             alert('日記の内容を入力してください');
+            return;
+          }
+
+          const apiKey = getApiKey(selectedProvider);
+          if (!apiKey) {
+            alert('設定画面でAPIキーを設定してください');
             return;
           }
 
@@ -251,11 +278,17 @@ export const JournalPage = (c: Context) => {
                 journalEntry: content,
                 moodLevel: selectedMood || 3,
                 recentMoods: [],
-                provider: selectedProvider
+                provider: selectedProvider,
+                apiKey: apiKey
               })
             });
 
             const data = await response.json();
+
+            if (data.error) {
+              alert('エラー: ' + data.error);
+              return;
+            }
 
             const container = document.getElementById('ai-advice-container');
             const contentDiv = document.getElementById('ai-advice-content');
@@ -296,7 +329,7 @@ export const JournalPage = (c: Context) => {
             this.textContent = '💬 アドバイスをもらう';
           }
         });
-      `}</script>
+      </script>`)}
     </Layout>
   );
 };
