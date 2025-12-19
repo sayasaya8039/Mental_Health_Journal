@@ -145,6 +145,20 @@ export const HistoryPage = (c: Context) => {
           return baseKey + '_' + getUserId();
         }
 
+        // 設定を取得（新キー優先、旧キーにフォールバック）
+        function getStorageData(baseKey, defaultValue) {
+          const newKey = getStorageKey(baseKey);
+          const data = localStorage.getItem(newKey);
+          if (data) return data;
+          // 旧キーから移行
+          const oldData = localStorage.getItem(baseKey);
+          if (oldData) {
+            localStorage.setItem(newKey, oldData);
+            return oldData;
+          }
+          return defaultValue;
+        }
+
         const MOOD_EMOJIS = ${JSON.stringify(MOOD_EMOJIS)};
         const MOOD_COLORS = ${JSON.stringify(MOOD_COLORS)};
 
@@ -162,7 +176,7 @@ export const HistoryPage = (c: Context) => {
 
         // データ読み込み
         function loadData() {
-          const entries = JSON.parse(localStorage.getItem(getStorageKey('journal_entries')) || '[]');
+          const entries = JSON.parse(getStorageData('journal_entries', '[]'));
 
           // 期間フィルター
           const now = new Date();
@@ -267,7 +281,7 @@ export const HistoryPage = (c: Context) => {
 
         // エクスポート
         document.getElementById('export-btn').addEventListener('click', function() {
-          const entries = localStorage.getItem(getStorageKey('journal_entries')) || '[]';
+          const entries = getStorageData('journal_entries', '[]');
           const blob = new Blob([entries], { type: 'application/json' });
           const url = URL.createObjectURL(blob);
           const a = document.createElement('a');

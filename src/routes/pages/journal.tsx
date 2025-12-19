@@ -167,6 +167,20 @@ export const JournalPage = (c: Context) => {
           return baseKey + '_' + getUserId();
         }
 
+        // 設定を取得（新キー優先、旧キーにフォールバック）
+        function getStorageData(baseKey, defaultValue) {
+          const newKey = getStorageKey(baseKey);
+          const data = localStorage.getItem(newKey);
+          if (data) return data;
+          // 旧キーから移行
+          const oldData = localStorage.getItem(baseKey);
+          if (oldData) {
+            localStorage.setItem(newKey, oldData);
+            return oldData;
+          }
+          return defaultValue;
+        }
+
         // 気分選択
         let selectedMood = ${initialMood || 'null'};
         document.querySelectorAll('.mood-btn').forEach(btn => {
@@ -218,7 +232,7 @@ export const JournalPage = (c: Context) => {
 
           // LocalStorageに保存
           try {
-            const entries = JSON.parse(localStorage.getItem(getStorageKey('journal_entries')) || '[]');
+            const entries = JSON.parse(getStorageData('journal_entries', '[]'));
             entries.unshift(entry);
             localStorage.setItem(getStorageKey('journal_entries'), JSON.stringify(entries));
             alert('保存しました！');
@@ -229,7 +243,7 @@ export const JournalPage = (c: Context) => {
         });
 
         // AI設定を読み込み
-        const aiSettings = JSON.parse(localStorage.getItem(getStorageKey('ai_settings')) || '{}');
+        const aiSettings = JSON.parse(getStorageData('ai_settings', '{}'));
         let selectedProvider = aiSettings.provider || 'gemini';
         const providerNames = {
           gemini: '🔮 Gemini 3',
@@ -255,7 +269,7 @@ export const JournalPage = (c: Context) => {
 
         // 現在のプロバイダーのAPIキーを取得
         function getApiKey(provider) {
-          const settings = JSON.parse(localStorage.getItem(getStorageKey('ai_settings')) || '{}');
+          const settings = JSON.parse(getStorageData('ai_settings', '{}'));
           switch(provider) {
             case 'gemini': return settings.geminiKey || '';
             case 'openai': return settings.openaiKey || '';
