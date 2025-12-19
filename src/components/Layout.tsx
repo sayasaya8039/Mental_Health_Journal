@@ -28,7 +28,7 @@ export const Layout: FC<LayoutProps> = ({ children, title = 'Mental Health Journ
         <link rel="apple-touch-icon" href="/icons/icon-192.png" />
         <title>{title}</title>
         <link rel="manifest" href="/manifest.json" />
-        <style>{globalStyles}</style>
+        {raw(`<style>${globalStyles}</style>`)}
       </head>
       <body>
         <div id="app" class="app-container">
