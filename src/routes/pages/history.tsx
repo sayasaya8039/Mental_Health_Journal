@@ -90,10 +90,6 @@ export const HistoryPage = (c: Context) => {
           align-items: flex-start;
           gap: var(--spacing-md);
           padding: var(--spacing-md);
-          border-bottom: 1px solid var(--border);
-        }
-        .entry-item:last-child {
-          border-bottom: none;
         }
         .entry-mood {
           font-size: 1.5rem;
@@ -131,7 +127,17 @@ export const HistoryPage = (c: Context) => {
           padding-top: var(--spacing-xs);
           font-size: 0.875rem;
         }
-        .entry-delete-btn {
+        .entry-item-wrapper {
+          border-bottom: 1px solid var(--border);
+        }
+        .entry-item-wrapper:last-child {
+          border-bottom: none;
+        }
+        .entry-actions {
+          display: flex;
+          gap: var(--spacing-xs);
+        }
+        .entry-delete-btn, .entry-advice-btn {
           background: none;
           border: none;
           cursor: pointer;
@@ -140,8 +146,43 @@ export const HistoryPage = (c: Context) => {
           opacity: 0.5;
           transition: opacity 0.2s;
         }
-        .entry-delete-btn:hover {
+        .entry-delete-btn:hover, .entry-advice-btn:hover {
           opacity: 1;
+        }
+        .entry-advice {
+          padding: var(--spacing-md);
+          background: var(--bg-secondary);
+          border-radius: var(--radius-md);
+          margin: var(--spacing-sm) 0 var(--spacing-md) 0;
+        }
+        .advice-header {
+          font-weight: 600;
+          margin-bottom: var(--spacing-sm);
+          display: flex;
+          align-items: center;
+          gap: var(--spacing-sm);
+        }
+        .advice-provider {
+          font-size: 0.75rem;
+          padding: 2px 8px;
+          background: var(--accent);
+          color: var(--bg-primary);
+          border-radius: var(--radius-full);
+          font-weight: 500;
+        }
+        .advice-text {
+          margin-bottom: var(--spacing-sm);
+          line-height: 1.6;
+        }
+        .advice-suggestions {
+          font-size: 0.875rem;
+        }
+        .advice-suggestions ul {
+          margin: var(--spacing-xs) 0 0 var(--spacing-md);
+          padding: 0;
+        }
+        .advice-suggestions li {
+          margin-bottom: var(--spacing-xs);
         }
       `}</style>
 
@@ -278,19 +319,40 @@ export const HistoryPage = (c: Context) => {
           container.innerHTML = entries.slice(0, 20).map(entry => {
             const date = new Date(entry.date);
             const dateStr = date.toLocaleDateString('ja-JP', { month: 'short', day: 'numeric', weekday: 'short' });
-            return '<div class="entry-item">' +
-              '<span class="entry-mood">' + MOOD_EMOJIS[entry.moodLevel] + '</span>' +
-              '<div class="entry-content">' +
-                '<div class="entry-date">' + dateStr + '</div>' +
-                '<div class="entry-text">' + (entry.content || '(内容なし)').substring(0, 100) + '</div>' +
-                (entry.tags && entry.tags.length > 0 ?
-                  '<div class="entry-tags">' + entry.tags.map(t => '<span class="entry-tag">' + t + '</span>').join('') + '</div>' : ''
-                ) +
+            const hasAdvice = entry.aiAdvice && entry.aiAdvice.advice;
+            return '<div class="entry-item-wrapper">' +
+              '<div class="entry-item">' +
+                '<span class="entry-mood">' + MOOD_EMOJIS[entry.moodLevel] + '</span>' +
+                '<div class="entry-content">' +
+                  '<div class="entry-date">' + dateStr + '</div>' +
+                  '<div class="entry-text">' + (entry.content || '(内容なし)').substring(0, 100) + '</div>' +
+                  (entry.tags && entry.tags.length > 0 ?
+                    '<div class="entry-tags">' + entry.tags.map(t => '<span class="entry-tag">' + t + '</span>').join('') + '</div>' : ''
+                  ) +
+                '</div>' +
+                '<div class="entry-actions">' +
+                  (hasAdvice ? '<button class="entry-advice-btn" onclick="toggleAdvice(\\'' + entry.id + '\\')" title="AIアドバイス">💬</button>' : '') +
+                  '<button class="entry-delete-btn" onclick="deleteEntry(\\'' + entry.id + '\\')" title="削除">🗑️</button>' +
+                '</div>' +
               '</div>' +
-              '<button class="entry-delete-btn" onclick="deleteEntry(\\'' + entry.id + '\\')" title="削除">🗑️</button>' +
+              (hasAdvice ? '<div class="entry-advice" id="advice-' + entry.id + '" style="display:none;">' +
+                '<div class="advice-header">💬 AIアドバイス <span class="advice-provider">' + (entry.aiAdvice.provider || '') + '</span></div>' +
+                '<p class="advice-text">' + entry.aiAdvice.advice + '</p>' +
+                (entry.aiAdvice.suggestions && entry.aiAdvice.suggestions.length > 0 ?
+                  '<div class="advice-suggestions"><strong>おすすめ:</strong><ul>' + entry.aiAdvice.suggestions.map(s => '<li>' + s + '</li>').join('') + '</ul></div>' : ''
+                ) +
+              '</div>' : '') +
             '</div>';
           }).join('');
         }
+
+        // AIアドバイス表示切替
+        window.toggleAdvice = function(entryId) {
+          const adviceDiv = document.getElementById('advice-' + entryId);
+          if (adviceDiv) {
+            adviceDiv.style.display = adviceDiv.style.display === 'none' ? 'block' : 'none';
+          }
+        };
 
         // 個別エントリー削除
         window.deleteEntry = function(entryId) {

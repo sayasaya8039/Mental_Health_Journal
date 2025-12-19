@@ -226,6 +226,7 @@ export const JournalPage = (c: Context) => {
             moodLevel: selectedMood,
             content: content,
             tags: tags,
+            aiAdvice: lastAiAdvice,
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString()
           };
@@ -250,6 +251,9 @@ export const JournalPage = (c: Context) => {
           openai: '🤖 GPT-4o',
           claude: '🧠 Claude 3'
         };
+
+        // 最後に取得したAIアドバイスを保存
+        let lastAiAdvice = null;
 
         // 保存されたプロバイダーを選択状態にする
         document.querySelectorAll('.provider-btn').forEach(btn => {
@@ -314,6 +318,15 @@ export const JournalPage = (c: Context) => {
               alert('エラー: ' + data.error);
               return;
             }
+
+            // AIアドバイスを保存（日記保存時に使用）
+            lastAiAdvice = {
+              provider: data.provider,
+              advice: data.advice,
+              suggestions: data.suggestions || [],
+              isCrisis: data.isCrisis || false,
+              createdAt: new Date().toISOString()
+            };
 
             const container = document.getElementById('ai-advice-container');
             const contentDiv = document.getElementById('ai-advice-content');
