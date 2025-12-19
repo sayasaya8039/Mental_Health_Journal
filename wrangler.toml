@@ -6,8 +6,10 @@ compatibility_flags = ["nodejs_compat"]
 [vars]
 APP_NAME = "Mental Health Journal"
 
-# Gemini API Key (本番環境ではsecretsを使用)
-# wrangler secret put GEMINI_API_KEY
+# AI API Keys (本番環境ではsecretsを使用)
+# wrangler secret put GEMINI_API_KEY      # Google Gemini (gemini-2.0-flash-exp)
+# wrangler secret put OPENAI_API_KEY      # OpenAI GPT-4.1
+# wrangler secret put ANTHROPIC_API_KEY   # Anthropic Claude Sonnet 4.5
 
 # Firebase設定 (本番環境ではsecretsを使用)
 # wrangler secret put FIREBASE_API_KEY

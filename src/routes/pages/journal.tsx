@@ -65,16 +65,38 @@ export const JournalPage = (c: Context) => {
           <button type="submit" class="btn btn-primary btn-full">
             💾 保存する
           </button>
-          <button type="button" id="ask-ai-btn" class="btn btn-secondary btn-full">
-            💬 AIにアドバイスをもらう
-          </button>
         </div>
       </form>
 
+      {/* AIアドバイス */}
+      <div class="card" style={{ marginTop: 'var(--spacing-md)' }}>
+        <h3 class="card-title">💬 AIアドバイス</h3>
+        <div class="form-group">
+          <label class="form-label">AIを選択</label>
+          <div class="ai-provider-selector">
+            <button type="button" class="provider-btn selected" data-provider="gemini">
+              🔮 Gemini
+            </button>
+            <button type="button" class="provider-btn" data-provider="openai">
+              🤖 GPT-4.1
+            </button>
+            <button type="button" class="provider-btn" data-provider="claude">
+              🧠 Claude
+            </button>
+          </div>
+        </div>
+        <button type="button" id="ask-ai-btn" class="btn btn-primary btn-full">
+          💬 アドバイスをもらう
+        </button>
+      </div>
+
       {/* AIアドバイス表示エリア */}
       <div id="ai-advice-container" class="card" style={{ display: 'none', marginTop: 'var(--spacing-md)' }}>
-        <h3 class="card-title">💡 AIからのアドバイス</h3>
-        <div id="ai-advice-content"></div>
+        <div class="flex" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+          <h3 class="card-title" style={{ marginBottom: 0 }}>💡 AIからのアドバイス</h3>
+          <span id="ai-provider-badge" class="provider-badge">Gemini</span>
+        </div>
+        <div id="ai-advice-content" style={{ marginTop: 'var(--spacing-md)' }}></div>
       </div>
 
       <style>{`
@@ -96,6 +118,39 @@ export const JournalPage = (c: Context) => {
           background: var(--accent);
           border-color: var(--accent);
           color: var(--bg-primary);
+        }
+        .ai-provider-selector {
+          display: flex;
+          gap: var(--spacing-sm);
+          margin-bottom: var(--spacing-md);
+        }
+        .provider-btn {
+          flex: 1;
+          padding: var(--spacing-sm);
+          border: 2px solid var(--border);
+          border-radius: var(--radius-md);
+          background: var(--bg-secondary);
+          color: var(--text-primary);
+          font-size: 0.875rem;
+          cursor: pointer;
+          transition: all 0.2s;
+          text-align: center;
+        }
+        .provider-btn:hover {
+          border-color: var(--accent);
+        }
+        .provider-btn.selected {
+          border-color: var(--accent);
+          background: var(--accent);
+          color: var(--bg-primary);
+        }
+        .provider-badge {
+          padding: 2px 8px;
+          border-radius: var(--radius-full);
+          background: var(--accent);
+          color: var(--bg-primary);
+          font-size: 0.75rem;
+          font-weight: 500;
         }
       `}</style>
 
@@ -161,6 +216,22 @@ export const JournalPage = (c: Context) => {
           }
         });
 
+        // AIプロバイダー選択
+        let selectedProvider = 'gemini';
+        const providerNames = {
+          gemini: '🔮 Gemini',
+          openai: '🤖 GPT-4.1',
+          claude: '🧠 Claude'
+        };
+
+        document.querySelectorAll('.provider-btn').forEach(btn => {
+          btn.addEventListener('click', function() {
+            document.querySelectorAll('.provider-btn').forEach(b => b.classList.remove('selected'));
+            this.classList.add('selected');
+            selectedProvider = this.dataset.provider;
+          });
+        });
+
         // AIアドバイス
         document.getElementById('ask-ai-btn').addEventListener('click', async function() {
           const content = document.getElementById('content').value;
@@ -170,7 +241,7 @@ export const JournalPage = (c: Context) => {
           }
 
           this.disabled = true;
-          this.textContent = '🔄 考え中...';
+          this.textContent = '🔄 ' + providerNames[selectedProvider] + ' が考え中...';
 
           try {
             const response = await fetch('/api/ai/advice', {
@@ -179,7 +250,8 @@ export const JournalPage = (c: Context) => {
               body: JSON.stringify({
                 journalEntry: content,
                 moodLevel: selectedMood || 3,
-                recentMoods: []
+                recentMoods: [],
+                provider: selectedProvider
               })
             });
 
@@ -187,6 +259,11 @@ export const JournalPage = (c: Context) => {
 
             const container = document.getElementById('ai-advice-container');
             const contentDiv = document.getElementById('ai-advice-content');
+            const badge = document.getElementById('ai-provider-badge');
+
+            // プロバイダーバッジを更新
+            badge.textContent = providerNames[data.provider] || data.provider;
+
             contentDiv.innerHTML = '<p>' + data.advice + '</p>';
             if (data.suggestions && data.suggestions.length > 0) {
               contentDiv.innerHTML += '<h4 style="margin-top: var(--spacing-md);">おすすめ</h4><ul>' +
@@ -197,7 +274,7 @@ export const JournalPage = (c: Context) => {
             alert('AIアドバイスの取得に失敗しました');
           } finally {
             this.disabled = false;
-            this.textContent = '💬 AIにアドバイスをもらう';
+            this.textContent = '💬 アドバイスをもらう';
           }
         });
       `}</script>

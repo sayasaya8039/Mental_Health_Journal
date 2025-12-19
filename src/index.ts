@@ -17,6 +17,8 @@ import { emergencyRouter } from './routes/api/emergency';
 // 環境変数の型定義
 type Bindings = {
   GEMINI_API_KEY: string;
+  OPENAI_API_KEY: string;
+  ANTHROPIC_API_KEY: string;
   FIREBASE_API_KEY: string;
   FIREBASE_AUTH_DOMAIN: string;
   FIREBASE_PROJECT_ID: string;
