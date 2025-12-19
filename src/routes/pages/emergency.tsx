@@ -164,9 +164,20 @@ export const EmergencyPage = (c: Context) => {
       `}</style>
 
       {raw(`<script>
+        // ユーザーID取得（未ログイン時は'guest'）
+        function getUserId() {
+          const authUser = JSON.parse(localStorage.getItem('auth_user') || 'null');
+          return authUser?.uid || 'guest';
+        }
+
+        // ユーザー別のストレージキーを生成
+        function getStorageKey(baseKey) {
+          return baseKey + '_' + getUserId();
+        }
+
         // SOS送信
         document.getElementById('sos-btn').addEventListener('click', async function() {
-          const contacts = JSON.parse(localStorage.getItem('emergency_contacts') || '[]');
+          const contacts = JSON.parse(localStorage.getItem(getStorageKey('emergency_contacts')) || '[]');
 
           if (contacts.length === 0) {
             alert('緊急連絡先が登録されていません。\\n設定画面から連絡先を追加してください。');

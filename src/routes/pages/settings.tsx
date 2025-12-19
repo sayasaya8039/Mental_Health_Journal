@@ -213,6 +213,17 @@ export const SettingsPage = (c: Context) => {
       `}</style>
 
       {raw(`<script>
+        // ユーザーID取得（未ログイン時は'guest'）
+        function getUserId() {
+          const authUser = JSON.parse(localStorage.getItem('auth_user') || 'null');
+          return authUser?.uid || 'guest';
+        }
+
+        // ユーザー別のストレージキーを生成
+        function getStorageKey(baseKey) {
+          return baseKey + '_' + getUserId();
+        }
+
         // ログイン状態の確認
         function checkAuthState() {
           const authUser = JSON.parse(localStorage.getItem('auth_user') || 'null');
@@ -251,7 +262,7 @@ export const SettingsPage = (c: Context) => {
 
         // 設定の読み込み
         function loadSettings() {
-          const settings = JSON.parse(localStorage.getItem('user_settings') || '{}');
+          const settings = JSON.parse(localStorage.getItem(getStorageKey('user_settings')) || '{}');
 
           // テーマ
           const theme = settings.theme || localStorage.getItem('theme') || 'system';
@@ -283,7 +294,7 @@ export const SettingsPage = (c: Context) => {
             reminderEnabled: document.getElementById('reminder-enabled').checked,
             reminderTime: document.getElementById('reminder-time').value
           };
-          localStorage.setItem('user_settings', JSON.stringify(settings));
+          localStorage.setItem(getStorageKey('user_settings'), JSON.stringify(settings));
 
           // テーマ適用
           if (theme === 'system') {
@@ -297,7 +308,7 @@ export const SettingsPage = (c: Context) => {
 
         // 緊急連絡先の読み込み
         function loadEmergencyContacts() {
-          const contacts = JSON.parse(localStorage.getItem('emergency_contacts') || '[]');
+          const contacts = JSON.parse(localStorage.getItem(getStorageKey('emergency_contacts')) || '[]');
           const container = document.getElementById('emergency-contacts-list');
 
           if (contacts.length === 0) {
@@ -319,9 +330,9 @@ export const SettingsPage = (c: Context) => {
         // 連絡先削除
         window.deleteContact = function(btn) {
           const id = btn.dataset.id;
-          let contacts = JSON.parse(localStorage.getItem('emergency_contacts') || '[]');
+          let contacts = JSON.parse(localStorage.getItem(getStorageKey('emergency_contacts')) || '[]');
           contacts = contacts.filter(c => c.id !== id);
-          localStorage.setItem('emergency_contacts', JSON.stringify(contacts));
+          localStorage.setItem(getStorageKey('emergency_contacts'), JSON.stringify(contacts));
           loadEmergencyContacts();
         };
 
@@ -345,9 +356,9 @@ export const SettingsPage = (c: Context) => {
             notifyOnSOS: true
           };
 
-          const contacts = JSON.parse(localStorage.getItem('emergency_contacts') || '[]');
+          const contacts = JSON.parse(localStorage.getItem(getStorageKey('emergency_contacts')) || '[]');
           contacts.push(contact);
-          localStorage.setItem('emergency_contacts', JSON.stringify(contacts));
+          localStorage.setItem(getStorageKey('emergency_contacts'), JSON.stringify(contacts));
           loadEmergencyContacts();
         });
 
@@ -366,7 +377,7 @@ export const SettingsPage = (c: Context) => {
 
         // AI設定の読み込み
         function loadAISettings() {
-          const aiSettings = JSON.parse(localStorage.getItem('ai_settings') || '{}');
+          const aiSettings = JSON.parse(localStorage.getItem(getStorageKey('ai_settings')) || '{}');
           const provider = aiSettings.provider || 'gemini';
           document.getElementById('ai-provider').value = provider;
           updateAIKeyVisibility(provider);
@@ -403,7 +414,7 @@ export const SettingsPage = (c: Context) => {
             openaiKey: document.getElementById('openai-api-key').value,
             anthropicKey: document.getElementById('anthropic-api-key').value
           };
-          localStorage.setItem('ai_settings', JSON.stringify(aiSettings));
+          localStorage.setItem(getStorageKey('ai_settings'), JSON.stringify(aiSettings));
         }
 
         // APIキー保存

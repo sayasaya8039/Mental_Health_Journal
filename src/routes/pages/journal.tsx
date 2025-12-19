@@ -156,6 +156,17 @@ export const JournalPage = (c: Context) => {
       `}</style>
 
       {raw(`<script>
+        // ユーザーID取得（未ログイン時は'guest'）
+        function getUserId() {
+          const authUser = JSON.parse(localStorage.getItem('auth_user') || 'null');
+          return authUser?.uid || 'guest';
+        }
+
+        // ユーザー別のストレージキーを生成
+        function getStorageKey(baseKey) {
+          return baseKey + '_' + getUserId();
+        }
+
         // 気分選択
         let selectedMood = ${initialMood || 'null'};
         document.querySelectorAll('.mood-btn').forEach(btn => {
@@ -207,9 +218,9 @@ export const JournalPage = (c: Context) => {
 
           // LocalStorageに保存
           try {
-            const entries = JSON.parse(localStorage.getItem('journal_entries') || '[]');
+            const entries = JSON.parse(localStorage.getItem(getStorageKey('journal_entries')) || '[]');
             entries.unshift(entry);
-            localStorage.setItem('journal_entries', JSON.stringify(entries));
+            localStorage.setItem(getStorageKey('journal_entries'), JSON.stringify(entries));
             alert('保存しました！');
             window.location.href = '/history';
           } catch (error) {
@@ -218,7 +229,7 @@ export const JournalPage = (c: Context) => {
         });
 
         // AI設定を読み込み
-        const aiSettings = JSON.parse(localStorage.getItem('ai_settings') || '{}');
+        const aiSettings = JSON.parse(localStorage.getItem(getStorageKey('ai_settings')) || '{}');
         let selectedProvider = aiSettings.provider || 'gemini';
         const providerNames = {
           gemini: '🔮 Gemini 3',
@@ -244,7 +255,7 @@ export const JournalPage = (c: Context) => {
 
         // 現在のプロバイダーのAPIキーを取得
         function getApiKey(provider) {
-          const settings = JSON.parse(localStorage.getItem('ai_settings') || '{}');
+          const settings = JSON.parse(localStorage.getItem(getStorageKey('ai_settings')) || '{}');
           switch(provider) {
             case 'gemini': return settings.geminiKey || '';
             case 'openai': return settings.openaiKey || '';

@@ -134,6 +134,17 @@ export const HistoryPage = (c: Context) => {
       `}</style>
 
       {raw(`<script>
+        // ユーザーID取得（未ログイン時は'guest'）
+        function getUserId() {
+          const authUser = JSON.parse(localStorage.getItem('auth_user') || 'null');
+          return authUser?.uid || 'guest';
+        }
+
+        // ユーザー別のストレージキーを生成
+        function getStorageKey(baseKey) {
+          return baseKey + '_' + getUserId();
+        }
+
         const MOOD_EMOJIS = ${JSON.stringify(MOOD_EMOJIS)};
         const MOOD_COLORS = ${JSON.stringify(MOOD_COLORS)};
 
@@ -151,7 +162,7 @@ export const HistoryPage = (c: Context) => {
 
         // データ読み込み
         function loadData() {
-          const entries = JSON.parse(localStorage.getItem('journal_entries') || '[]');
+          const entries = JSON.parse(localStorage.getItem(getStorageKey('journal_entries')) || '[]');
 
           // 期間フィルター
           const now = new Date();
@@ -256,7 +267,7 @@ export const HistoryPage = (c: Context) => {
 
         // エクスポート
         document.getElementById('export-btn').addEventListener('click', function() {
-          const entries = localStorage.getItem('journal_entries') || '[]';
+          const entries = localStorage.getItem(getStorageKey('journal_entries')) || '[]';
           const blob = new Blob([entries], { type: 'application/json' });
           const url = URL.createObjectURL(blob);
           const a = document.createElement('a');
@@ -269,7 +280,7 @@ export const HistoryPage = (c: Context) => {
         // 全削除
         document.getElementById('delete-all-btn').addEventListener('click', function() {
           if (confirm('本当に全てのデータを削除しますか？この操作は取り消せません。')) {
-            localStorage.removeItem('journal_entries');
+            localStorage.removeItem(getStorageKey('journal_entries'));
             loadData();
             alert('全てのデータを削除しました');
           }
