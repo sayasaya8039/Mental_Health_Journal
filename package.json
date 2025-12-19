@@ -1,0 +1,30 @@
+{
+  "name": "mental-health-journal",
+  "version": "1.0.0",
+  "description": "オンラインメンタルヘルスジャーナル：気分ログ・AIアドバイス・緊急連絡機能",
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "build": "wrangler deploy --dry-run --outdir Mental_Health_Journal",
+    "deploy": "wrangler deploy",
+    "lint": "eslint src --ext .ts,.tsx",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "hono": "^4.6.0",
+    "@hono/zod-validator": "^0.4.0",
+    "zod": "^3.23.0",
+    "firebase": "^11.0.0",
+    "@google/generative-ai": "^0.21.0",
+    "dexie": "^4.0.0"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20240919.0",
+    "wrangler": "^3.80.0",
+    "typescript": "^5.6.0",
+    "@types/node": "^22.0.0",
+    "eslint": "^9.0.0",
+    "@typescript-eslint/eslint-plugin": "^8.0.0",
+    "@typescript-eslint/parser": "^8.0.0"
+  }
+}

@@ -1,0 +1,43 @@
+# 依存関係
+node_modules/
+
+# ビルド成果物
+Mental_Health_Journal/
+dist/
+build/
+.wrangler/
+
+# 環境変数・機密情報
+.env
+.env.*
+.dev.vars
+*.pem
+*.key
+credentials.json
+token.json
+secrets/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# ログ
+*.log
+npm-debug.log*
+
+# キャッシュ
+.cache/
+*.tsbuildinfo
+
+# テスト
+coverage/
+
+# note記事（GitHub非公開）
+articles/
