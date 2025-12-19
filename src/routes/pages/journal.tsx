@@ -76,13 +76,13 @@ export const JournalPage = (c: Context) => {
           <label class="form-label">AIを選択</label>
           <div class="ai-provider-selector">
             <button type="button" class="provider-btn selected" data-provider="gemini">
-              🔮 Gemini 3
+              🔮 Gemini 2.0
             </button>
             <button type="button" class="provider-btn" data-provider="openai">
-              🤖 GPT-5.2
+              🤖 GPT-4o
             </button>
             <button type="button" class="provider-btn" data-provider="claude">
-              🧠 Haiku 4.5
+              🧠 Claude 3
             </button>
           </div>
         </div>
@@ -246,9 +246,9 @@ export const JournalPage = (c: Context) => {
         const aiSettings = JSON.parse(getStorageData('ai_settings', '{}'));
         let selectedProvider = aiSettings.provider || 'gemini';
         const providerNames = {
-          gemini: '🔮 Gemini 3',
-          openai: '🤖 GPT-5.2',
-          claude: '🧠 Haiku 4.5'
+          gemini: '🔮 Gemini 2.0',
+          openai: '🤖 GPT-4o',
+          claude: '🧠 Claude 3'
         };
 
         // 保存されたプロバイダーを選択状態にする

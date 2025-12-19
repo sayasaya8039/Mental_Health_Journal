@@ -90,20 +90,20 @@ aiRouter.get('/providers', (c) => {
   const providers = [
     {
       id: 'gemini',
-      name: 'Gemini 3 Flash',
-      model: 'gemini-3.0-flash',
+      name: 'Gemini 2.0 Flash',
+      model: 'gemini-2.0-flash',
       available: !!c.env.GEMINI_API_KEY,
     },
     {
       id: 'openai',
-      name: 'GPT-5.2',
-      model: 'gpt-5.2',
+      name: 'GPT-4o',
+      model: 'gpt-4o',
       available: !!c.env.OPENAI_API_KEY,
     },
     {
       id: 'claude',
-      name: 'Claude Haiku 4.5',
-      model: 'claude-haiku-4-5-20251212',
+      name: 'Claude 3 Haiku',
+      model: 'claude-3-haiku-20240307',
       available: !!c.env.ANTHROPIC_API_KEY,
     },
   ];
@@ -127,7 +127,7 @@ async function callGemini(
   }
 
   const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.0-flash:generateContent?key=${apiKey}`,
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
     {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -178,7 +178,7 @@ async function callOpenAI(
       Authorization: `Bearer ${apiKey}`,
     },
     body: JSON.stringify({
-      model: 'gpt-5.2',
+      model: 'gpt-4o',
       messages: [
         {
           role: 'system',
@@ -228,7 +228,7 @@ async function callClaude(
       'anthropic-version': '2023-06-01',
     },
     body: JSON.stringify({
-      model: 'claude-haiku-4-5-20251212',
+      model: 'claude-3-haiku-20240307',
       max_tokens: 1024,
       system:
         'あなたは心理カウンセラーのアシスタントです。温かく寄り添うアドバイスを提供してください。医療アドバイスは行わないでください。深刻な症状が見られる場合は、専門家への相談を勧めてください。',
