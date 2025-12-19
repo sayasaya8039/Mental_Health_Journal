@@ -159,6 +159,38 @@ export const LoginPage = (c: Context) => {
           console.log('Firebase初期化をスキップ（開発環境）');
         }
 
+        // デモモード用ユーザー管理関数
+        function getDemoUsers() {
+          return JSON.parse(localStorage.getItem('demo_users') || '{}');
+        }
+
+        function saveDemoUser(email, password) {
+          const users = getDemoUsers();
+          users[email] = {
+            uid: 'demo-' + Date.now(),
+            email: email,
+            password: password,
+            displayName: email.split('@')[0],
+            photoURL: null
+          };
+          localStorage.setItem('demo_users', JSON.stringify(users));
+          return users[email];
+        }
+
+        function findDemoUser(email, password) {
+          const users = getDemoUsers();
+          const user = users[email];
+          if (user && user.password === password) {
+            return user;
+          }
+          return null;
+        }
+
+        function isDemoUserExists(email) {
+          const users = getDemoUsers();
+          return !!users[email];
+        }
+
         // Googleログイン
         document.getElementById('google-login-btn').addEventListener('click', async () => {
           if (!auth) {
@@ -190,21 +222,25 @@ export const LoginPage = (c: Context) => {
         document.getElementById('login-form').addEventListener('submit', async (e) => {
           e.preventDefault();
 
+          const email = document.getElementById('email').value;
+          const password = document.getElementById('password').value;
+
           if (!auth) {
-            // デモモード：ローカルストレージで擬似ログイン
-            const email = document.getElementById('email').value;
+            // デモモード：登録済みユーザーを確認
+            const user = findDemoUser(email, password);
+            if (!user) {
+              alert('メールアドレスまたはパスワードが正しくありません。\\nアカウントをお持ちでない場合は新規登録してください。');
+              return;
+            }
             localStorage.setItem('auth_user', JSON.stringify({
-              uid: 'demo-' + Date.now(),
-              email: email,
-              displayName: email.split('@')[0],
-              photoURL: null
+              uid: user.uid,
+              email: user.email,
+              displayName: user.displayName,
+              photoURL: user.photoURL
             }));
             window.location.href = '/';
             return;
           }
-
-          const email = document.getElementById('email').value;
-          const password = document.getElementById('password').value;
 
           try {
             const result = await signInWithEmailAndPassword(auth, email, password);
@@ -249,13 +285,20 @@ export const LoginPage = (c: Context) => {
           }
 
           if (!auth) {
-            // デモモード
+            // デモモード：既存ユーザーチェック
+            if (isDemoUserExists(email)) {
+              alert('このメールアドレスは既に登録されています。\\nログイン画面からログインしてください。');
+              return;
+            }
+            // 新規ユーザーを保存
+            const user = saveDemoUser(email, password);
             localStorage.setItem('auth_user', JSON.stringify({
-              uid: 'demo-' + Date.now(),
-              email: email,
-              displayName: email.split('@')[0],
-              photoURL: null
+              uid: user.uid,
+              email: user.email,
+              displayName: user.displayName,
+              photoURL: user.photoURL
             }));
+            alert('登録が完了しました！');
             window.location.href = '/';
             return;
           }

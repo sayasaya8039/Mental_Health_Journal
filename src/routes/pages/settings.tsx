@@ -172,6 +172,42 @@ export const SettingsPage = (c: Context) => {
       `}</style>
 
       <script>{`
+        // ログイン状態の確認
+        function checkAuthState() {
+          const authUser = JSON.parse(localStorage.getItem('auth_user') || 'null');
+          const loggedOutView = document.getElementById('logged-out-view');
+          const loggedInView = document.getElementById('logged-in-view');
+
+          if (authUser) {
+            loggedOutView.style.display = 'none';
+            loggedInView.style.display = 'block';
+            document.getElementById('user-name').textContent = authUser.displayName || 'ユーザー';
+            document.getElementById('user-email').textContent = authUser.email || '';
+
+            // アバター設定
+            const avatar = document.getElementById('user-avatar');
+            if (authUser.photoURL) {
+              avatar.src = authUser.photoURL;
+              avatar.style.display = 'block';
+            } else {
+              // デフォルトアバター
+              avatar.src = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50" fill="%237DD3FC"/><text x="50" y="60" text-anchor="middle" font-size="40" fill="white">' + (authUser.displayName ? authUser.displayName.charAt(0).toUpperCase() : '?') + '</text></svg>');
+              avatar.style.display = 'block';
+            }
+          } else {
+            loggedOutView.style.display = 'block';
+            loggedInView.style.display = 'none';
+          }
+        }
+
+        // ログアウト処理
+        document.getElementById('logout-btn').addEventListener('click', function() {
+          if (confirm('ログアウトしますか？')) {
+            localStorage.removeItem('auth_user');
+            window.location.href = '/login';
+          }
+        });
+
         // 設定の読み込み
         function loadSettings() {
           const settings = JSON.parse(localStorage.getItem('user_settings') || '{}');
@@ -288,6 +324,7 @@ export const SettingsPage = (c: Context) => {
         document.getElementById('reminder-time').addEventListener('change', saveSettings);
 
         // 初期化
+        checkAuthState();
         loadSettings();
       `}</script>
     </Layout>
