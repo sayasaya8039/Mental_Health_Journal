@@ -133,21 +133,27 @@ const globalStyles = `
   }
 
   html, body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Hiragino Sans', sans-serif;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
     background: var(--bg-primary);
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Hiragino Sans', sans-serif;
     color: var(--text-primary);
     line-height: 1.6;
-    min-height: 100vh;
-    height: 100%;
   }
 
   .app-container {
     display: flex;
     flex-direction: column;
-    min-height: 100vh;
+    height: 100vh;
     max-width: 480px;
     margin: 0 auto;
     background: var(--bg-primary);
+    overflow: hidden;
   }
 
   /* ヘッダー */
@@ -207,6 +213,8 @@ const globalStyles = `
     flex: 1;
     padding: var(--spacing-md);
     padding-bottom: 80px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
 
   /* ボトムナビ */
