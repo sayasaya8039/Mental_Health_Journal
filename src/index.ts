@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { logger } from 'hono/logger';
+import { serveStatic } from 'hono/cloudflare-workers';
 
 // ページ
 import { HomePage } from './routes/pages/index';
@@ -29,6 +30,13 @@ const app = new Hono<{ Bindings: Bindings }>();
 // ミドルウェア
 app.use('*', logger());
 app.use('*', cors());
+
+// 静的ファイル配信
+app.use('/js/*', serveStatic({ root: './' }));
+app.use('/css/*', serveStatic({ root: './' }));
+app.use('/icons/*', serveStatic({ root: './' }));
+app.use('/favicon.ico', serveStatic({ path: './favicon.ico' }));
+app.use('/manifest.json', serveStatic({ path: './manifest.json' }));
 
 // API ルート
 app.route('/api/ai', aiRouter);

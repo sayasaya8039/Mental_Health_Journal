@@ -1,4 +1,5 @@
 import type { Context } from 'hono';
+import { html, raw } from 'hono/html';
 import { Layout } from '../../components/Layout';
 
 export const LoginPage = (c: Context) => {
@@ -133,7 +134,131 @@ export const LoginPage = (c: Context) => {
         }
       `}</style>
 
-      <script type="module" src="/js/login.js"></script>
+      {raw(`<script>
+// Firebase設定（実際の値は環境変数から取得）
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_AUTH_DOMAIN",
+  projectId: "YOUR_PROJECT_ID"
+};
+
+// Firebase設定が有効かどうかをチェック
+const isFirebaseConfigValid = firebaseConfig.apiKey &&
+  firebaseConfig.apiKey !== "YOUR_API_KEY" &&
+  firebaseConfig.authDomain !== "YOUR_AUTH_DOMAIN" &&
+  firebaseConfig.projectId !== "YOUR_PROJECT_ID";
+
+// デモモード用ユーザー管理関数
+function getDemoUsers() {
+  return JSON.parse(localStorage.getItem('demo_users') || '{}');
+}
+
+function saveDemoUser(email, password) {
+  const users = getDemoUsers();
+  users[email] = {
+    uid: 'demo-' + Date.now(),
+    email: email,
+    password: password,
+    displayName: email.split('@')[0],
+    photoURL: null
+  };
+  localStorage.setItem('demo_users', JSON.stringify(users));
+  return users[email];
+}
+
+function findDemoUser(email, password) {
+  const users = getDemoUsers();
+  const user = users[email];
+  if (user && user.password === password) {
+    return user;
+  }
+  return null;
+}
+
+function isDemoUserExists(email) {
+  const users = getDemoUsers();
+  return !!users[email];
+}
+
+// DOMが読み込まれた後に実行
+document.addEventListener('DOMContentLoaded', function() {
+  console.log('デモモードで動作中（Firebase未設定）');
+
+  // Googleログイン
+  document.getElementById('google-login-btn').addEventListener('click', function() {
+    if (!isFirebaseConfigValid) {
+      alert('デモモードではGoogleログインは使用できません。\\nメールアドレスで新規登録してください。');
+      return;
+    }
+  });
+
+  // メール/パスワードログイン
+  document.getElementById('login-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    var email = document.getElementById('email').value;
+    var password = document.getElementById('password').value;
+
+    if (!isFirebaseConfigValid) {
+      var user = findDemoUser(email, password);
+      if (!user) {
+        alert('メールアドレスまたはパスワードが正しくありません。\\nアカウントをお持ちでない場合は新規登録してください。');
+        return;
+      }
+      localStorage.setItem('auth_user', JSON.stringify({
+        uid: user.uid,
+        email: user.email,
+        displayName: user.displayName,
+        photoURL: user.photoURL
+      }));
+      window.location.href = '/';
+      return;
+    }
+  });
+
+  // 新規登録フォームの表示切替
+  document.getElementById('toggle-register').addEventListener('click', function() {
+    document.getElementById('register-section').style.display = 'block';
+    document.getElementById('toggle-register').parentElement.style.display = 'none';
+  });
+
+  document.getElementById('back-to-login').addEventListener('click', function() {
+    document.getElementById('register-section').style.display = 'none';
+    document.getElementById('toggle-register').parentElement.style.display = 'block';
+  });
+
+  // 新規登録
+  document.getElementById('register-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    var email = document.getElementById('reg-email').value;
+    var password = document.getElementById('reg-password').value;
+    var passwordConfirm = document.getElementById('reg-password-confirm').value;
+
+    if (password !== passwordConfirm) {
+      alert('パスワードが一致しません');
+      return;
+    }
+
+    if (!isFirebaseConfigValid) {
+      if (isDemoUserExists(email)) {
+        alert('このメールアドレスは既に登録されています。\\nログイン画面からログインしてください。');
+        return;
+      }
+      var user = saveDemoUser(email, password);
+      localStorage.setItem('auth_user', JSON.stringify({
+        uid: user.uid,
+        email: user.email,
+        displayName: user.displayName,
+        photoURL: user.photoURL
+      }));
+      alert('登録が完了しました！');
+      window.location.href = '/';
+      return;
+    }
+  });
+});
+</script>`)}
     </Layout>
   );
 };
