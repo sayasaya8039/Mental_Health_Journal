@@ -150,13 +150,26 @@ export const LoginPage = (c: Context) => {
           projectId: "YOUR_PROJECT_ID"
         };
 
-        // Firebase初期化
+        // Firebase設定が有効かどうかをチェック
+        const isFirebaseConfigValid = firebaseConfig.apiKey &&
+          firebaseConfig.apiKey !== "YOUR_API_KEY" &&
+          firebaseConfig.authDomain !== "YOUR_AUTH_DOMAIN" &&
+          firebaseConfig.projectId !== "YOUR_PROJECT_ID";
+
+        // Firebase初期化（設定が有効な場合のみ）
         let app, auth;
-        try {
-          app = initializeApp(firebaseConfig);
-          auth = getAuth(app);
-        } catch (error) {
-          console.log('Firebase初期化をスキップ（開発環境）');
+        if (isFirebaseConfigValid) {
+          try {
+            app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            console.log('Firebase初期化完了');
+          } catch (error) {
+            console.log('Firebase初期化エラー:', error);
+            auth = null;
+          }
+        } else {
+          console.log('デモモードで動作中（Firebase未設定）');
+          auth = null;
         }
 
         // デモモード用ユーザー管理関数
