@@ -143,7 +143,7 @@ export const HistoryPage = (c: Context) => {
           cursor: pointer;
           font-size: 1rem;
           padding: var(--spacing-xs);
-          opacity: 0.5;
+          opacity: 0.8;
           transition: opacity 0.2s;
         }
         .entry-delete-btn:hover, .entry-advice-btn:hover {
