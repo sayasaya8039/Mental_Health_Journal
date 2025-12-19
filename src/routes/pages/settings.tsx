@@ -1,4 +1,5 @@
 import type { Context } from 'hono';
+import { raw } from 'hono/html';
 import { Layout } from '../../components/Layout';
 
 export const SettingsPage = (c: Context) => {
@@ -211,7 +212,7 @@ export const SettingsPage = (c: Context) => {
         }
       `}</style>
 
-      <script>{`
+      {raw(`<script>
         // ログイン状態の確認
         function checkAuthState() {
           const authUser = JSON.parse(localStorage.getItem('auth_user') || 'null');
@@ -408,7 +409,7 @@ export const SettingsPage = (c: Context) => {
         checkAuthState();
         loadSettings();
         loadAISettings();
-      `}</script>
+      </script>`)}
     </Layout>
   );
 };
