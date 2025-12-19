@@ -18,9 +18,13 @@ export const Layout: FC<LayoutProps> = ({ children, title = 'Mental Health Journ
     <html lang="ja">
       <head>
         <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no" />
         <meta name="description" content="あなたの心を大切にするメンタルヘルスジャーナル" />
         <meta name="theme-color" content="#0F172A" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="apple-mobile-web-app-title" content="MH Journal" />
+        <link rel="apple-touch-icon" href="/icons/icon-192.png" />
         <title>{title}</title>
         <link rel="manifest" href="/manifest.json" />
         <style>{globalStyles}</style>
@@ -150,10 +154,18 @@ const globalStyles = `
     display: flex;
     flex-direction: column;
     height: 100vh;
+    width: 100%;
     max-width: 480px;
     margin: 0 auto;
     background: var(--bg-primary);
     overflow: hidden;
+  }
+
+  /* モバイル対応 */
+  @media (max-width: 480px) {
+    .app-container {
+      max-width: 100%;
+    }
   }
 
   /* ヘッダー */
@@ -230,7 +242,16 @@ const globalStyles = `
     background: var(--bg-secondary);
     border-top: 1px solid var(--border);
     padding: var(--spacing-sm) 0;
+    padding-bottom: calc(var(--spacing-sm) + env(safe-area-inset-bottom));
     z-index: 100;
+  }
+
+  @media (max-width: 480px) {
+    .bottom-nav {
+      max-width: 100%;
+      left: 0;
+      transform: none;
+    }
   }
 
   .nav-item {
