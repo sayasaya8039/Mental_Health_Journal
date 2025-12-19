@@ -52,6 +52,46 @@ export const SettingsPage = (c: Context) => {
         </div>
       </div>
 
+      {/* AI API設定 */}
+      <div class="card">
+        <h3 class="card-title">🤖 AI設定</h3>
+        <p class="text-secondary" style={{ fontSize: '0.75rem', marginBottom: 'var(--spacing-md)' }}>
+          AIアドバイス機能で使用するAPIを設定します。APIキーはローカルに保存され、サーバーには送信されません。
+        </p>
+        <div class="form-group">
+          <label class="form-label">使用するAIモデル</label>
+          <select id="ai-provider" class="input">
+            <option value="gemini">Google Gemini (gemini-2.0-flash)</option>
+            <option value="openai">OpenAI GPT-4.1</option>
+            <option value="anthropic">Anthropic Claude Sonnet 4</option>
+          </select>
+        </div>
+        <div class="form-group" id="gemini-key-group">
+          <label class="form-label">Gemini API Key</label>
+          <input type="password" id="gemini-api-key" class="input" placeholder="AIza..." />
+          <p class="text-secondary" style={{ fontSize: '0.75rem', marginTop: 'var(--spacing-xs)' }}>
+            <a href="https://aistudio.google.com/apikey" target="_blank" class="text-link">Google AI Studio</a>で取得
+          </p>
+        </div>
+        <div class="form-group" id="openai-key-group" style={{ display: 'none' }}>
+          <label class="form-label">OpenAI API Key</label>
+          <input type="password" id="openai-api-key" class="input" placeholder="sk-..." />
+          <p class="text-secondary" style={{ fontSize: '0.75rem', marginTop: 'var(--spacing-xs)' }}>
+            <a href="https://platform.openai.com/api-keys" target="_blank" class="text-link">OpenAI Platform</a>で取得
+          </p>
+        </div>
+        <div class="form-group" id="anthropic-key-group" style={{ display: 'none' }}>
+          <label class="form-label">Anthropic API Key</label>
+          <input type="password" id="anthropic-api-key" class="input" placeholder="sk-ant-..." />
+          <p class="text-secondary" style={{ fontSize: '0.75rem', marginTop: 'var(--spacing-xs)' }}>
+            <a href="https://console.anthropic.com/settings/keys" target="_blank" class="text-link">Anthropic Console</a>で取得
+          </p>
+        </div>
+        <button id="save-api-key-btn" class="btn btn-primary btn-full">
+          APIキーを保存
+        </button>
+      </div>
+
       {/* データ設定 */}
       <div class="card">
         <h3 class="card-title">💾 データ管理</h3>
@@ -323,9 +363,51 @@ export const SettingsPage = (c: Context) => {
         });
         document.getElementById('reminder-time').addEventListener('change', saveSettings);
 
+        // AI設定の読み込み
+        function loadAISettings() {
+          const aiSettings = JSON.parse(localStorage.getItem('ai_settings') || '{}');
+          const provider = aiSettings.provider || 'gemini';
+          document.getElementById('ai-provider').value = provider;
+          updateAIKeyVisibility(provider);
+
+          if (aiSettings.geminiKey) {
+            document.getElementById('gemini-api-key').value = aiSettings.geminiKey;
+          }
+          if (aiSettings.openaiKey) {
+            document.getElementById('openai-api-key').value = aiSettings.openaiKey;
+          }
+          if (aiSettings.anthropicKey) {
+            document.getElementById('anthropic-api-key').value = aiSettings.anthropicKey;
+          }
+        }
+
+        // AIプロバイダー切り替え時のUI更新
+        function updateAIKeyVisibility(provider) {
+          document.getElementById('gemini-key-group').style.display = provider === 'gemini' ? 'block' : 'none';
+          document.getElementById('openai-key-group').style.display = provider === 'openai' ? 'block' : 'none';
+          document.getElementById('anthropic-key-group').style.display = provider === 'anthropic' ? 'block' : 'none';
+        }
+
+        document.getElementById('ai-provider').addEventListener('change', function() {
+          updateAIKeyVisibility(this.value);
+        });
+
+        // APIキー保存
+        document.getElementById('save-api-key-btn').addEventListener('click', function() {
+          const aiSettings = {
+            provider: document.getElementById('ai-provider').value,
+            geminiKey: document.getElementById('gemini-api-key').value,
+            openaiKey: document.getElementById('openai-api-key').value,
+            anthropicKey: document.getElementById('anthropic-api-key').value
+          };
+          localStorage.setItem('ai_settings', JSON.stringify(aiSettings));
+          alert('APIキーを保存しました');
+        });
+
         // 初期化
         checkAuthState();
         loadSettings();
+        loadAISettings();
       `}</script>
     </Layout>
   );
