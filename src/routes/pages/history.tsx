@@ -131,6 +131,18 @@ export const HistoryPage = (c: Context) => {
           padding-top: var(--spacing-xs);
           font-size: 0.875rem;
         }
+        .entry-delete-btn {
+          background: none;
+          border: none;
+          cursor: pointer;
+          font-size: 1rem;
+          padding: var(--spacing-xs);
+          opacity: 0.5;
+          transition: opacity 0.2s;
+        }
+        .entry-delete-btn:hover {
+          opacity: 1;
+        }
       `}</style>
 
       {raw(`<script>
@@ -275,9 +287,20 @@ export const HistoryPage = (c: Context) => {
                   '<div class="entry-tags">' + entry.tags.map(t => '<span class="entry-tag">' + t + '</span>').join('') + '</div>' : ''
                 ) +
               '</div>' +
+              '<button class="entry-delete-btn" onclick="deleteEntry(\\'' + entry.id + '\\')" title="削除">🗑️</button>' +
             '</div>';
           }).join('');
         }
+
+        // 個別エントリー削除
+        window.deleteEntry = function(entryId) {
+          if (!confirm('この記録を削除しますか？')) return;
+
+          let entries = JSON.parse(getStorageData('journal_entries', '[]'));
+          entries = entries.filter(e => e.id !== entryId);
+          localStorage.setItem(getStorageKey('journal_entries'), JSON.stringify(entries));
+          loadData();
+        };
 
         // エクスポート
         document.getElementById('export-btn').addEventListener('click', function() {
