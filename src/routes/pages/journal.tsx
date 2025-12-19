@@ -78,10 +78,10 @@ export const JournalPage = (c: Context) => {
               🔮 Gemini 3
             </button>
             <button type="button" class="provider-btn" data-provider="openai">
-              🤖 o4-mini
+              🤖 GPT-5.2
             </button>
             <button type="button" class="provider-btn" data-provider="claude">
-              🧠 Opus 4.5
+              🧠 Haiku 4.5
             </button>
           </div>
         </div>
@@ -220,8 +220,8 @@ export const JournalPage = (c: Context) => {
         let selectedProvider = 'gemini';
         const providerNames = {
           gemini: '🔮 Gemini 3',
-          openai: '🤖 o4-mini',
-          claude: '🧠 Opus 4.5'
+          openai: '🤖 GPT-5.2',
+          claude: '🧠 Haiku 4.5'
         };
 
         document.querySelectorAll('.provider-btn').forEach(btn => {

@@ -68,14 +68,14 @@ aiRouter.get('/providers', (c) => {
     },
     {
       id: 'openai',
-      name: 'OpenAI o4-mini',
-      model: 'o4-mini',
+      name: 'GPT-5.2',
+      model: 'gpt-5.2',
       available: !!c.env.OPENAI_API_KEY,
     },
     {
       id: 'claude',
-      name: 'Claude Opus 4.5',
-      model: 'claude-opus-4-5-20251124',
+      name: 'Claude Haiku 4.5',
+      model: 'claude-haiku-4-5-20251212',
       available: !!c.env.ANTHROPIC_API_KEY,
     },
   ];
@@ -129,7 +129,7 @@ async function callGemini(
 }
 
 // ========================================
-// OpenAI API (o4-mini)
+// OpenAI API (GPT-5.2)
 // ========================================
 async function callOpenAI(
   apiKey: string,
@@ -150,7 +150,7 @@ async function callOpenAI(
       Authorization: `Bearer ${apiKey}`,
     },
     body: JSON.stringify({
-      model: 'o4-mini',
+      model: 'gpt-5.2',
       messages: [
         {
           role: 'system',
@@ -178,7 +178,7 @@ async function callOpenAI(
 }
 
 // ========================================
-// Claude API (Opus 4.5)
+// Claude API (Haiku 4.5)
 // ========================================
 async function callClaude(
   apiKey: string,
@@ -200,7 +200,7 @@ async function callClaude(
       'anthropic-version': '2023-06-01',
     },
     body: JSON.stringify({
-      model: 'claude-opus-4-5-20251124',
+      model: 'claude-haiku-4-5-20251212',
       max_tokens: 1024,
       system:
         'あなたは心理カウンセラーのアシスタントです。温かく寄り添うアドバイスを提供してください。医療アドバイスは行わないでください。深刻な症状が見られる場合は、専門家への相談を勧めてください。',
