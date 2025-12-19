@@ -26,6 +26,17 @@ const adviceRequestSchema = z.object({
 aiRouter.post('/advice', zValidator('json', adviceRequestSchema), async (c) => {
   const { journalEntry, moodLevel, recentMoods, provider } = c.req.valid('json');
 
+  // 緊急キーワードチェック - 危機的状況の場合は即座に専門窓口を案内
+  if (checkForCrisisKeywords(journalEntry)) {
+    const crisisResponse = getCrisisMessage();
+    return c.json({
+      ...crisisResponse,
+      provider: 'crisis_support',
+      isCrisis: true,
+      disclaimer: 'このメッセージはAIによる自動応答です。専門家によるサポートを受けることを強くお勧めします。',
+    });
+  }
+
   const prompt = buildPrompt(journalEntry, moodLevel, recentMoods);
 
   try {
@@ -44,7 +55,21 @@ aiRouter.post('/advice', zValidator('json', adviceRequestSchema), async (c) => {
         break;
     }
 
-    return c.json({ ...response, provider });
+    // ハルシネーション・有害コンテンツチェック
+    const harmCheck = checkForHarmfulContent(response.advice);
+    if (harmCheck.isHarmful) {
+      console.warn(`Harmful content detected (${harmCheck.reason}), using default advice`);
+      response = {
+        advice: getDefaultAdvice(moodLevel),
+        suggestions: getDefaultSuggestions(moodLevel),
+      };
+    }
+
+    return c.json({
+      ...response,
+      provider,
+      disclaimer: 'これはAIによるアドバイスであり、専門家の意見ではありません。深刻な悩みがある場合は専門家にご相談ください。',
+    });
   } catch (error) {
     console.error(`AI advice error (${provider}):`, error);
 
@@ -53,6 +78,7 @@ aiRouter.post('/advice', zValidator('json', adviceRequestSchema), async (c) => {
       advice: getDefaultAdvice(moodLevel),
       suggestions: getDefaultSuggestions(moodLevel),
       provider: 'default',
+      disclaimer: 'これはAIによるアドバイスであり、専門家の意見ではありません。',
     });
   }
 });
@@ -225,6 +251,59 @@ async function callClaude(
 // 共通関数
 // ========================================
 
+// 危険なコンテンツをチェック
+function checkForHarmfulContent(text: string): { isHarmful: boolean; reason?: string } {
+  const harmfulPatterns = [
+    { pattern: /(?:薬|medication|drug).*(?:飲|服用|摂取)/i, reason: '医薬品に関するアドバイス' },
+    { pattern: /(?:診断|diagnosis)/i, reason: '診断に関する内容' },
+    { pattern: /(?:うつ病|統合失調症|双極性障害|PTSD|パニック障害)/i, reason: '具体的な診断名の使用' },
+    { pattern: /(?:\d+%|研究によると|統計では)/i, reason: '検証不能な統計・研究データ' },
+    { pattern: /(?:必ず.*治る|絶対に.*効果)/i, reason: '過度な断言' },
+  ];
+
+  for (const { pattern, reason } of harmfulPatterns) {
+    if (pattern.test(text)) {
+      return { isHarmful: true, reason };
+    }
+  }
+
+  return { isHarmful: false };
+}
+
+// 緊急対応が必要かチェック
+function checkForCrisisKeywords(journalEntry: string): boolean {
+  const crisisPatterns = [
+    /死にたい/,
+    /自殺/,
+    /消えたい/,
+    /生きていたくない/,
+    /自傷/,
+    /リストカット/,
+    /殺したい/,
+    /もう限界/,
+  ];
+
+  return crisisPatterns.some((pattern) => pattern.test(journalEntry));
+}
+
+// 免責事項を追加
+function addDisclaimer(advice: string): string {
+  return advice;
+}
+
+// 緊急時のメッセージ
+function getCrisisMessage(): { advice: string; suggestions: string[] } {
+  return {
+    advice:
+      'あなたの気持ちを打ち明けてくださり、ありがとうございます。今とても辛い状況にいらっしゃるのですね。一人で抱え込まないでください。専門の相談窓口に連絡することをお勧めします。あなたの気持ちを聴いてくれる人がいます。',
+    suggestions: [
+      'いのちの電話（0120-783-556）に電話する',
+      'よりそいホットライン（0120-279-338）に相談する',
+      '信頼できる人に今の気持ちを伝える',
+    ],
+  };
+}
+
 // プロンプト構築
 function buildPrompt(journalEntry: string, moodLevel: number, recentMoods: number[]): string {
   const moodDescription = getMoodDescription(moodLevel);
@@ -232,11 +311,21 @@ function buildPrompt(journalEntry: string, moodLevel: number, recentMoods: numbe
 
   return `ユーザーの日記と気分に基づいて、温かく寄り添うアドバイスを提供してください。
 
+【絶対に守るべきルール - ハルシネーション・ファクトチェック】
+1. 確実に正しいと言える一般的な情報のみを提供してください
+2. 統計データ、研究結果、具体的な数字は引用しないでください（不正確になる可能性があるため）
+3. 「〜と言われています」「研究によると」などの曖昧な表現は使わないでください
+4. 医学的・心理学的な専門用語や診断名は使用しないでください
+5. 特定の薬、サプリメント、治療法を推奨しないでください
+6. 不確かなことは「かもしれません」と明示してください
+7. 一般的なセルフケアのアドバイスに限定してください
+
 【重要な注意事項】
-- 医療アドバイスは行わないでください。
-- 深刻な症状（自傷行為、希死念慮など）が見られる場合は、専門家への相談を勧めてください。
-- 共感的で温かいトーンを心がけてください。
-- 具体的で実行可能なアドバイスを提供してください。
+- 医療アドバイスは絶対に行わないでください
+- 深刻な症状（自傷行為、希死念慮など）が見られる場合は、必ず専門家への相談を勧めてください
+- 共感的で温かいトーンを心がけてください
+- 具体的で今すぐ実行可能なアドバイスを提供してください
+- あなたはAIであり、専門家ではないことを自覚してください
 
 【ユーザーの状況】
 今日の気分: ${moodLevel}/5（${moodDescription}）
@@ -248,11 +337,11 @@ ${journalEntry}
 【回答形式】
 以下のJSON形式で回答してください：
 {
-  "advice": "メインのアドバイス（200文字程度）",
+  "advice": "メインのアドバイス（200文字程度、事実に基づいた一般的なアドバイスのみ）",
   "suggestions": ["提案1", "提案2", "提案3"]
 }
 
-提案は具体的で今すぐ実行できるものを3つ挙げてください。`;
+提案は具体的で今すぐ実行できる一般的なセルフケアを3つ挙げてください。`;
 }
 
 // 気分の説明を取得

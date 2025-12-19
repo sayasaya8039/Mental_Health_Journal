@@ -262,13 +262,32 @@ export const JournalPage = (c: Context) => {
             const badge = document.getElementById('ai-provider-badge');
 
             // プロバイダーバッジを更新
-            badge.textContent = providerNames[data.provider] || data.provider;
+            if (data.isCrisis) {
+              badge.textContent = '🆘 緊急サポート';
+              badge.style.background = '#EF4444';
+            } else {
+              badge.textContent = providerNames[data.provider] || data.provider;
+              badge.style.background = '';
+            }
 
-            contentDiv.innerHTML = '<p>' + data.advice + '</p>';
+            // 緊急時は特別なスタイルで表示
+            if (data.isCrisis) {
+              contentDiv.innerHTML = '<div style="background: #FEE2E2; border: 2px solid #EF4444; border-radius: 8px; padding: 16px; margin-bottom: 12px;">' +
+                '<p style="color: #991B1B; font-weight: bold;">' + data.advice + '</p></div>';
+            } else {
+              contentDiv.innerHTML = '<p>' + data.advice + '</p>';
+            }
+
             if (data.suggestions && data.suggestions.length > 0) {
               contentDiv.innerHTML += '<h4 style="margin-top: var(--spacing-md);">おすすめ</h4><ul>' +
                 data.suggestions.map(s => '<li>' + s + '</li>').join('') + '</ul>';
             }
+
+            // 免責事項を表示
+            if (data.disclaimer) {
+              contentDiv.innerHTML += '<p style="margin-top: var(--spacing-md); padding: 8px; background: var(--bg-secondary); border-radius: 4px; font-size: 0.75rem; color: var(--text-secondary);">⚠️ ' + data.disclaimer + '</p>';
+            }
+
             container.style.display = 'block';
           } catch (error) {
             alert('AIアドバイスの取得に失敗しました');
