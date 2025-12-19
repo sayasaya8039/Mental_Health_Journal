@@ -75,13 +75,13 @@ export const JournalPage = (c: Context) => {
           <label class="form-label">AIを選択</label>
           <div class="ai-provider-selector">
             <button type="button" class="provider-btn selected" data-provider="gemini">
-              🔮 Gemini
+              🔮 Gemini 3
             </button>
             <button type="button" class="provider-btn" data-provider="openai">
-              🤖 GPT-4.1
+              🤖 o4-mini
             </button>
             <button type="button" class="provider-btn" data-provider="claude">
-              🧠 Claude
+              🧠 Opus 4.5
             </button>
           </div>
         </div>
@@ -219,9 +219,9 @@ export const JournalPage = (c: Context) => {
         // AIプロバイダー選択
         let selectedProvider = 'gemini';
         const providerNames = {
-          gemini: '🔮 Gemini',
-          openai: '🤖 GPT-4.1',
-          claude: '🧠 Claude'
+          gemini: '🔮 Gemini 3',
+          openai: '🤖 o4-mini',
+          claude: '🧠 Opus 4.5'
         };
 
         document.querySelectorAll('.provider-btn').forEach(btn => {

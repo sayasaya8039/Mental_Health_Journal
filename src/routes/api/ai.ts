@@ -62,20 +62,20 @@ aiRouter.get('/providers', (c) => {
   const providers = [
     {
       id: 'gemini',
-      name: 'Google Gemini',
-      model: 'gemini-2.0-flash-exp',
+      name: 'Gemini 3 Flash',
+      model: 'gemini-3.0-flash',
       available: !!c.env.GEMINI_API_KEY,
     },
     {
       id: 'openai',
-      name: 'OpenAI GPT-4.1',
-      model: 'gpt-4.1',
+      name: 'OpenAI o4-mini',
+      model: 'o4-mini',
       available: !!c.env.OPENAI_API_KEY,
     },
     {
       id: 'claude',
-      name: 'Anthropic Claude',
-      model: 'claude-sonnet-4-5-20250929',
+      name: 'Claude Opus 4.5',
+      model: 'claude-opus-4-5-20251124',
       available: !!c.env.ANTHROPIC_API_KEY,
     },
   ];
@@ -99,7 +99,7 @@ async function callGemini(
   }
 
   const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${apiKey}`,
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.0-flash:generateContent?key=${apiKey}`,
     {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -129,7 +129,7 @@ async function callGemini(
 }
 
 // ========================================
-// OpenAI API (GPT-4.1)
+// OpenAI API (o4-mini)
 // ========================================
 async function callOpenAI(
   apiKey: string,
@@ -150,7 +150,7 @@ async function callOpenAI(
       Authorization: `Bearer ${apiKey}`,
     },
     body: JSON.stringify({
-      model: 'gpt-4.1',
+      model: 'o4-mini',
       messages: [
         {
           role: 'system',
@@ -178,7 +178,7 @@ async function callOpenAI(
 }
 
 // ========================================
-// Claude API (Sonnet 4.5)
+// Claude API (Opus 4.5)
 // ========================================
 async function callClaude(
   apiKey: string,
@@ -200,7 +200,7 @@ async function callClaude(
       'anthropic-version': '2023-06-01',
     },
     body: JSON.stringify({
-      model: 'claude-sonnet-4-5-20250929',
+      model: 'claude-opus-4-5-20251124',
       max_tokens: 1024,
       system:
         'あなたは心理カウンセラーのアシスタントです。温かく寄り添うアドバイスを提供してください。医療アドバイスは行わないでください。深刻な症状が見られる場合は、専門家への相談を勧めてください。',
