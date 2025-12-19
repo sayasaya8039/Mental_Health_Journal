@@ -39,7 +39,15 @@
       "Bash(mkdir:*)",
       "Bash(cp:*)",
       "Bash(mv:*)",
-      "Bash(rm:*)"
+      "Bash(rm:*)",
+      "Bash(echo:*)",
+      "Bash(curl:*)",
+      "Bash(cat:*)",
+      "Bash(head:*)",
+      "Bash(tail:*)",
+      "Bash(grep:*)",
+      "Bash(cd:*)",
+      "Bash(pwd:*)"
     ],
     "deny": [
       "Bash(rm -rf /)",

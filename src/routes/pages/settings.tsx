@@ -61,9 +61,9 @@ export const SettingsPage = (c: Context) => {
         <div class="form-group">
           <label class="form-label">使用するAIモデル</label>
           <select id="ai-provider" class="input">
-            <option value="gemini">Google Gemini (gemini-2.0-flash)</option>
-            <option value="openai">OpenAI GPT-4.1</option>
-            <option value="anthropic">Anthropic Claude Sonnet 4</option>
+            <option value="gemini">Google Gemini 3 Flash</option>
+            <option value="openai">OpenAI GPT-5.2</option>
+            <option value="anthropic">Anthropic Claude Haiku 4.5</option>
           </select>
         </div>
         <div class="form-group" id="gemini-key-group">
