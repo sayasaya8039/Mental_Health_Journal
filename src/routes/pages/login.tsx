@@ -3,6 +3,11 @@ import { html, raw } from 'hono/html';
 import { Layout } from '../../components/Layout';
 
 export const LoginPage = (c: Context) => {
+  // 環境変数からFirebase設定を取得
+  const firebaseApiKey = c.env?.FIREBASE_API_KEY || 'YOUR_API_KEY';
+  const firebaseAuthDomain = c.env?.FIREBASE_AUTH_DOMAIN || 'YOUR_AUTH_DOMAIN';
+  const firebaseProjectId = c.env?.FIREBASE_PROJECT_ID || 'YOUR_PROJECT_ID';
+
   return c.html(
     <Layout title="ログイン - Mental Health Journal" currentPath="/login">
       <div style={{ maxWidth: '400px', margin: '0 auto', paddingTop: 'var(--spacing-xl)' }}>
@@ -135,11 +140,11 @@ export const LoginPage = (c: Context) => {
       `}</style>
 
       {raw(`<script>
-// Firebase設定（実際の値は環境変数から取得）
+// Firebase設定（環境変数から取得）
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_AUTH_DOMAIN",
-  projectId: "YOUR_PROJECT_ID"
+  apiKey: "${firebaseApiKey}",
+  authDomain: "${firebaseAuthDomain}",
+  projectId: "${firebaseProjectId}"
 };
 
 // Firebase設定が有効かどうかをチェック
@@ -180,26 +185,66 @@ function isDemoUserExists(email) {
   return !!users[email];
 }
 
-// DOMが読み込まれた後に実行
-document.addEventListener('DOMContentLoaded', function() {
+// Firebase初期化
+var firebaseApp = null;
+var firebaseAuth = null;
+
+async function initFirebase() {
+  if (isFirebaseConfigValid) {
+    try {
+      var firebaseAppModule = await import('https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js');
+      var firebaseAuthModule = await import('https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js');
+      firebaseApp = firebaseAppModule.initializeApp(firebaseConfig);
+      firebaseAuth = firebaseAuthModule.getAuth(firebaseApp);
+      console.log('Firebase初期化完了');
+      return firebaseAuthModule;
+    } catch (error) {
+      console.error('Firebase初期化エラー:', error);
+      return null;
+    }
+  }
   console.log('デモモードで動作中（Firebase未設定）');
+  return null;
+}
+
+// DOMが読み込まれた後に実行
+document.addEventListener('DOMContentLoaded', async function() {
+  var authModule = await initFirebase();
 
   // Googleログイン
-  document.getElementById('google-login-btn').addEventListener('click', function() {
-    if (!isFirebaseConfigValid) {
+  document.getElementById('google-login-btn').addEventListener('click', async function() {
+    if (!isFirebaseConfigValid || !firebaseAuth) {
       alert('デモモードではGoogleログインは使用できません。\\nメールアドレスで新規登録してください。');
       return;
+    }
+
+    try {
+      var provider = new authModule.GoogleAuthProvider();
+      var result = await authModule.signInWithPopup(firebaseAuth, provider);
+      var user = result.user;
+
+      localStorage.setItem('auth_user', JSON.stringify({
+        uid: user.uid,
+        email: user.email,
+        displayName: user.displayName,
+        photoURL: user.photoURL
+      }));
+
+      window.location.href = '/';
+    } catch (error) {
+      console.error('Googleログインエラー:', error);
+      alert('ログインに失敗しました: ' + error.message);
     }
   });
 
   // メール/パスワードログイン
-  document.getElementById('login-form').addEventListener('submit', function(e) {
+  document.getElementById('login-form').addEventListener('submit', async function(e) {
     e.preventDefault();
 
     var email = document.getElementById('email').value;
     var password = document.getElementById('password').value;
 
-    if (!isFirebaseConfigValid) {
+    if (!isFirebaseConfigValid || !firebaseAuth) {
       var user = findDemoUser(email, password);
       if (!user) {
         alert('メールアドレスまたはパスワードが正しくありません。\\nアカウントをお持ちでない場合は新規登録してください。');
@@ -213,6 +258,23 @@ document.addEventListener('DOMContentLoaded', function() {
       }));
       window.location.href = '/';
       return;
+    }
+
+    try {
+      var result = await authModule.signInWithEmailAndPassword(firebaseAuth, email, password);
+      var user = result.user;
+
+      localStorage.setItem('auth_user', JSON.stringify({
+        uid: user.uid,
+        email: user.email,
+        displayName: user.displayName,
+        photoURL: user.photoURL
+      }));
+
+      window.location.href = '/';
+    } catch (error) {
+      console.error('ログインエラー:', error);
+      alert('ログインに失敗しました: ' + error.message);
     }
   });
 
@@ -228,7 +290,7 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 
   // 新規登録
-  document.getElementById('register-form').addEventListener('submit', function(e) {
+  document.getElementById('register-form').addEventListener('submit', async function(e) {
     e.preventDefault();
 
     var email = document.getElementById('reg-email').value;
@@ -240,7 +302,7 @@ document.addEventListener('DOMContentLoaded', function() {
       return;
     }
 
-    if (!isFirebaseConfigValid) {
+    if (!isFirebaseConfigValid || !firebaseAuth) {
       if (isDemoUserExists(email)) {
         alert('このメールアドレスは既に登録されています。\\nログイン画面からログインしてください。');
         return;
@@ -255,6 +317,24 @@ document.addEventListener('DOMContentLoaded', function() {
       alert('登録が完了しました！');
       window.location.href = '/';
       return;
+    }
+
+    try {
+      var result = await authModule.createUserWithEmailAndPassword(firebaseAuth, email, password);
+      var user = result.user;
+
+      localStorage.setItem('auth_user', JSON.stringify({
+        uid: user.uid,
+        email: user.email,
+        displayName: user.displayName,
+        photoURL: user.photoURL
+      }));
+
+      alert('登録が完了しました！');
+      window.location.href = '/';
+    } catch (error) {
+      console.error('登録エラー:', error);
+      alert('登録に失敗しました: ' + error.message);
     }
   });
 });
