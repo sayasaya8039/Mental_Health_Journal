@@ -1,4 +1,5 @@
 import type { FC, PropsWithChildren } from 'hono/jsx';
+import { raw } from 'hono/html';
 
 interface LayoutProps extends PropsWithChildren {
   title?: string;
@@ -75,7 +76,7 @@ export const Layout: FC<LayoutProps> = ({ children, title = 'Mental Health Journ
         </div>
 
         {/* テーマ・認証スクリプト */}
-        <script>{clientScript}</script>
+        {raw(`<script>${clientScript}</script>`)}
       </body>
     </html>
   );
