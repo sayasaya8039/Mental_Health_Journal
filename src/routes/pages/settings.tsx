@@ -166,7 +166,7 @@ export const SettingsPage = (c: Context) => {
         </p>
       </div>
 
-      <style>{`
+      {raw(`<style>
         .setting-group {
           display: flex;
           flex-direction: column;
@@ -210,7 +210,7 @@ export const SettingsPage = (c: Context) => {
         .contact-item:last-child {
           border-bottom: none;
         }
-      `}</style>
+      </style>`)}
 
       {raw(`<script>
         // ユーザーID取得（未ログイン時は'guest'）

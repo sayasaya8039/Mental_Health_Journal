@@ -85,7 +85,7 @@ export const EmergencyPage = (c: Context) => {
         </p>
       </div>
 
-      <style>{`
+      {raw(`<style>
         .helpline-list {
           display: flex;
           flex-direction: column;
@@ -161,7 +161,7 @@ export const EmergencyPage = (c: Context) => {
         .tips-list li:last-child {
           border-bottom: none;
         }
-      `}</style>
+      </style>`)}
 
       {raw(`<script>
         // ユーザーID取得（未ログイン時は'guest'）

@@ -100,7 +100,7 @@ export const JournalPage = (c: Context) => {
         <div id="ai-advice-content" style={{ marginTop: 'var(--spacing-md)' }}></div>
       </div>
 
-      <style>{`
+      {raw(`<style>
         .tag-btn {
           padding: var(--spacing-xs) var(--spacing-sm);
           border: 1px solid var(--border);
@@ -153,7 +153,7 @@ export const JournalPage = (c: Context) => {
           font-size: 0.75rem;
           font-weight: 500;
         }
-      `}</style>
+      </style>`)}
 
       {raw(`<script>
         // ユーザーID取得（未ログイン時は'guest'）

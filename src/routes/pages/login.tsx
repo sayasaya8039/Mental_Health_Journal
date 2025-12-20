@@ -99,7 +99,7 @@ export const LoginPage = (c: Context) => {
         </p>
       </div>
 
-      <style>{`
+      {raw(`<style>
         .social-btn {
           display: flex;
           align-items: center;
@@ -137,7 +137,7 @@ export const LoginPage = (c: Context) => {
         .text-link:hover {
           text-decoration: underline;
         }
-      `}</style>
+      </style>`)}
 
       {raw(`<script>
 // Firebase設定（環境変数から取得）

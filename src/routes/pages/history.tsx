@@ -70,7 +70,7 @@ export const HistoryPage = (c: Context) => {
         </div>
       </div>
 
-      <style>{`
+      {raw(`<style>
         .period-btn {
           padding: var(--spacing-sm) var(--spacing-md);
           border: 1px solid var(--border);
@@ -184,7 +184,7 @@ export const HistoryPage = (c: Context) => {
         .advice-suggestions li {
           margin-bottom: var(--spacing-xs);
         }
-      `}</style>
+      </style>`)}
 
       {raw(`<script>
         // ユーザーID取得（未ログイン時は'guest'）
