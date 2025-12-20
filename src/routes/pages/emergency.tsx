@@ -5,7 +5,7 @@ import { HELPLINES } from '../../types';
 
 export const EmergencyPage = (c: Context) => {
   return c.html(
-    <Layout title="緊急連絡 - Mental Health Journal" currentPath="/emergency">
+    <Layout title="緊急連絡 - こころの日記" currentPath="/emergency">
       {/* 緊急メッセージ */}
       <div class="card" style={{ background: 'linear-gradient(135deg, #EF4444, #DC2626)', color: 'white', textAlign: 'center' }}>
         <h2 style={{ marginBottom: 'var(--spacing-sm)' }}>🆘 緊急連絡</h2>

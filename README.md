@@ -1,6 +1,6 @@
-# Mental Health Journal
+# こころの日記
 
-あなたの心を大切にするオンラインメンタルヘルスジャーナルです。
+あなたの心を大切にするオンラインこころの日記です。
 
 ## 機能
 
@@ -83,4 +83,4 @@ MIT License
 
 ---
 
-v1.0.0 | Made with 💙 for mental health
+v1.4.0 | Made with 💙 for mental health

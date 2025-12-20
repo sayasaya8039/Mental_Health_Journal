@@ -4,7 +4,7 @@ import { Layout } from '../../components/Layout';
 
 export const SettingsPage = (c: Context) => {
   return c.html(
-    <Layout title="設定 - Mental Health Journal" currentPath="/settings">
+    <Layout title="設定 - こころの日記" currentPath="/settings">
       <h2 style={{ marginBottom: 'var(--spacing-md)' }}>⚙️ 設定</h2>
 
       {/* アカウント */}
@@ -159,7 +159,7 @@ export const SettingsPage = (c: Context) => {
       {/* バージョン情報 */}
       <div class="card text-center">
         <p class="text-secondary" style={{ fontSize: '0.875rem' }}>
-          Mental Health Journal v1.3.1
+          こころの日記 v1.4.0
         </p>
         <p class="text-secondary" style={{ fontSize: '0.75rem', marginTop: 'var(--spacing-xs)' }}>
           あなたの心を大切に 💙

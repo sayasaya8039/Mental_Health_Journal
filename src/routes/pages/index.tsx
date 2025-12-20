@@ -12,7 +12,7 @@ export const HomePage = (c: Context) => {
   });
 
   return c.html(
-    <Layout title="Mental Health Journal - ホーム" currentPath="/">
+    <Layout title="こころの日記 - ホーム" currentPath="/">
       {/* 今日の日付 */}
       <div class="card text-center">
         <p class="text-secondary">{today}</p>

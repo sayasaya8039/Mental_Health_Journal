@@ -1,7 +1,7 @@
 {
-  "name": "Mental Health Journal",
-  "short_name": "MH Journal",
-  "description": "あなたの心を大切にするメンタルヘルスジャーナル",
+  "name": "こころの日記",
+  "short_name": "こころの日記",
+  "description": "あなたの心を大切にするこころの日記",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0F172A",

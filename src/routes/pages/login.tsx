@@ -9,12 +9,12 @@ export const LoginPage = (c: Context) => {
   const firebaseProjectId = c.env?.FIREBASE_PROJECT_ID || 'YOUR_PROJECT_ID';
 
   return c.html(
-    <Layout title="ログイン - Mental Health Journal" currentPath="/login">
+    <Layout title="ログイン - こころの日記" currentPath="/login">
       <div style={{ maxWidth: '400px', margin: '0 auto', paddingTop: 'var(--spacing-xl)' }}>
         {/* ロゴ */}
         <div class="text-center" style={{ marginBottom: 'var(--spacing-xl)' }}>
           <div style={{ fontSize: '4rem', marginBottom: 'var(--spacing-md)' }}>💙</div>
-          <h1 style={{ fontSize: '1.5rem', marginBottom: 'var(--spacing-sm)' }}>Mental Health Journal</h1>
+          <h1 style={{ fontSize: '1.5rem', marginBottom: 'var(--spacing-sm)' }}>こころの日記</h1>
           <p class="text-secondary">あなたの心を大切にするジャーナル</p>
         </div>
 

@@ -8,7 +8,7 @@ export const JournalPage = (c: Context) => {
   const initialMood = moodParam ? parseInt(moodParam) as MoodLevel : undefined;
 
   return c.html(
-    <Layout title="日記を書く - Mental Health Journal" currentPath="/journal">
+    <Layout title="日記を書く - こころの日記" currentPath="/journal">
       <h2 style={{ marginBottom: 'var(--spacing-md)' }}>📝 今日の日記</h2>
 
       <form id="journal-form">

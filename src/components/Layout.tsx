@@ -14,17 +14,17 @@ const navItems = [
   { path: '/settings', label: '設定', icon: '⚙️' },
 ];
 
-export const Layout: FC<LayoutProps> = ({ children, title = 'Mental Health Journal', currentPath = '/' }) => {
+export const Layout: FC<LayoutProps> = ({ children, title = 'こころの日記', currentPath = '/' }) => {
   return (
     <html lang="ja">
       <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no" />
-        <meta name="description" content="あなたの心を大切にするメンタルヘルスジャーナル" />
+        <meta name="description" content="あなたの心を大切にする こころの日記" />
         <meta name="theme-color" content="#0F172A" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-        <meta name="apple-mobile-web-app-title" content="MH Journal" />
+        <meta name="apple-mobile-web-app-title" content="こころの日記" />
         <link rel="apple-touch-icon" href="/icons/icon-192.png" />
         <title>{title}</title>
         <link rel="manifest" href="/manifest.json" />
@@ -37,7 +37,7 @@ export const Layout: FC<LayoutProps> = ({ children, title = 'Mental Health Journ
             <div class="header-content">
               <h1 class="logo">
                 <span class="logo-icon">💙</span>
-                <span class="logo-text">Mental Health Journal</span>
+                <span class="logo-text">こころの日記</span>
               </h1>
               <div class="header-actions">
                 <button id="theme-toggle" class="icon-btn" aria-label="テーマ切替">

@@ -5,7 +5,7 @@ import { MOOD_EMOJIS, MOOD_COLORS, type MoodLevel } from '../../types';
 
 export const HistoryPage = (c: Context) => {
   return c.html(
-    <Layout title="履歴 - Mental Health Journal" currentPath="/history">
+    <Layout title="履歴 - こころの日記" currentPath="/history">
       <h2 style={{ marginBottom: 'var(--spacing-md)' }}>📊 気分の履歴</h2>
 
       {/* 期間選択 */}
